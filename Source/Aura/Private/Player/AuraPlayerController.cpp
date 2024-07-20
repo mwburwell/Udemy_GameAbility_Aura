@@ -11,6 +11,67 @@ AAuraPlayerController::AAuraPlayerController()
 	bReplicates = true;
 }
 
+void AAuraPlayerController::PlayerTick(float DeltaTime)
+{
+	Super::PlayerTick(DeltaTime);
+
+	CursorTrace();
+}
+
+
+void AAuraPlayerController::CursorTrace()
+{
+	FHitResult CursorHit;
+	GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, false, CursorHit);
+	if (!CursorHit.bBlockingHit) return;
+
+	LastActor = ThisActor;
+	ThisActor = CursorHit.GetActor();
+
+	/**
+	* Line trace from cursor. There are several Scenarios:
+	* A. LastActor is null && ThisActor is null
+	*		- Do Nothing
+	* B. LastActor is null, but ThisActor is Valid
+	*		- Hovering over actor for the first frame
+	*		- Highlight this actor
+	* C. LastActor is Valid && This Actor is Null
+	*		- UnHighlight Last Actor
+	* D. LastActor is Valid && ThisActor is Valid && LastActor != ThisActor
+	*		- UnHighlight LastActor
+	*		- Highlight ThisActor
+	* E. Both are valid, and are the same actor
+	*		- Do Nothing
+	*		
+	*/
+
+	if (LastActor == nullptr) {
+		if (ThisActor != nullptr)
+			// Case B
+			ThisActor->HighlightActor();
+		else {
+			// Case A -> Do Nothing
+		}
+	}
+	else { // LastActor is valid
+		if (ThisActor == nullptr) {
+			// case C
+			LastActor->UnHighlightActor();
+		}
+		else { // Both Actors are Valid
+			if (LastActor != ThisActor) {
+				// Case D
+				LastActor->UnHighlightActor();
+				ThisActor->HighlightActor();
+			}
+			else {
+				// Case E -> Do nothing
+			}
+		}
+	}
+}
+
+
 void AAuraPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
