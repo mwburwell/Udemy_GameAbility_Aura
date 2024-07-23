@@ -5,7 +5,9 @@
 
 #include "AbilitySystemComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Player/AuraPlayerController.h"
 #include "Player/AuraPlayerState.h"
+#include "UI/HUD/AuraHUD.h"
 
 AAuraCharacter::AAuraCharacter()
 {
@@ -39,21 +41,18 @@ void AAuraCharacter::OnRep_PlayerState()
 void AAuraCharacter::InitAbilityActorInfo()
 {
 	AAuraPlayerState* AuraPlayerState = GetPlayerState<AAuraPlayerState>();
-	//Delay(10.f);
 	check(AuraPlayerState);
+
 	AuraPlayerState->GetAbilitySystemComponent()->InitAbilityActorInfo(AuraPlayerState, this);
 	AbilitySystemComponent = AuraPlayerState->GetAbilitySystemComponent();
 	AttributeSet = AuraPlayerState->GetAttributeSet();
-}
 
-void AAuraCharacter::DelayDebugMessage()
-{
-	UE_LOG(LogTemp, Warning, TEXT("Delayed function execution."))
-}
+	if (AAuraPlayerController* AuraPlayerController = Cast<AAuraPlayerController>(GetController())) 
+	{
+		if (AAuraHUD* AuraHUD = Cast<AAuraHUD>(AuraPlayerController->GetHUD()))
+		{
+			AuraHUD->InitOverlay(AuraPlayerController, AuraPlayerState, AbilitySystemComponent, AttributeSet);
+		}
+	}
 
-void AAuraCharacter::Delay(float DelayDuration)
-{
-	FTimerHandle TimeHandler;
-
-	GetWorldTimerManager().SetTimer(TimeHandler, this, &AAuraCharacter::DelayDebugMessage, DelayDuration, false);
 }

@@ -24,7 +24,4 @@ public:
 
 private:
 	void InitAbilityActorInfo();
-
-	void DelayDebugMessage();
-	void Delay(float DelayDuration);
 };
