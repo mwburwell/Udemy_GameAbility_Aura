@@ -51,9 +51,11 @@ private:
 	TObjectPtr<USplineComponent> Spline;
 
 	void CursorTrace();
+	void AutoRun();
 
 	TScriptInterface<IEnemyInterface> LastActor;
 	TScriptInterface<IEnemyInterface> ThisActor;
+	FHitResult CursorHit;
 	
 	UPROPERTY()
 	TObjectPtr<UAuraAbilitySystemComponent> AuraAbilitySystemComponent;
